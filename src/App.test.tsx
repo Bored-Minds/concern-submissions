@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
 describe('app test', () => {
@@ -19,5 +19,27 @@ describe('app test', () => {
 
         expect(idTooltip).toBeInTheDocument();
         expect(last4OfSocialTooltip).toBeInTheDocument();
+    });
+
+    test('state ID input only accepts alphanumeric characters', () => {
+        render(<App />);
+
+        const idInput = screen.getByLabelText('State Issued ID Number');
+        fireEvent.change(idInput, { target: { value: 'ABC123!@#' } });
+        expect(idInput).toHaveValue('ABC123');
+    });
+
+    test('SSN input only accepts numeric characters and has a max length of 4', () => {
+        render(<App />);
+
+        const ssnInput = screen.getByLabelText('Last 4 of SSN');
+        fireEvent.change(ssnInput, { target: { value: '1234abcd' } });
+        expect(ssnInput).toHaveValue('1234');
+    });
+
+    test('visibility icon is present in the SSN input', () => {
+        render(<App />);
+        const visibilityIcon = screen.getByTestId('VisibilityIcon');
+        expect(visibilityIcon).toBeInTheDocument();
     });
 });
